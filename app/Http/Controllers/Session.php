@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+
+class Session extends Controller
+{
+
+    public function store(){
+        $attributes = request()->validate([
+            'email' => ['required', Rule::exists('users', 'email')],
+            'password' => 'required'
+        ]);
+        $user = User::firstWhere('email', $attributes['email']);
+        if($attributes['password'] == $user->password){
+            session()->regenerate();//session fixation
+            auth()->login($user);
+            return redirect('/anasayfa')->with('success', 'Hoşgeldiniz. '.$user->name.' '.$user->surname);
+        }
+        return redirect('/')->with('error', 'Parola hatalı');
+    }
+    public function destroy(){
+        $username = auth()->user()->name;
+        $usersurname = auth()->user()->surname;
+        auth()->logout();
+        return redirect('/')->with('success', 'Hoşçakalın. '.$username.' '.$usersurname);
+    }
+}
