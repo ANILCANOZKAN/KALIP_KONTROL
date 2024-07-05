@@ -14,8 +14,7 @@ class Session extends Controller
             'email' => ['required', Rule::exists('users', 'email')],
             'password' => 'required'
         ]);
-        $user = User::firstWhere('email', $attributes['email']);
-        if($attributes['password'] == $user->password){
+        if(Auth::attempt($attributes)){
             session()->regenerate();//session fixation
             auth()->login($user);
             return redirect('/anasayfa')->with('success', 'Hoşgeldiniz. '.$user->name.' '.$user->surname);
