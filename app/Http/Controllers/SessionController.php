@@ -16,7 +16,6 @@ class Session extends Controller
         ]);
         if(Auth::attempt($attributes)){
             session()->regenerate();//session fixation
-            auth()->login($user);
             return redirect('/anasayfa')->with('success', 'Hoşgeldiniz. '.$user->name.' '.$user->surname);
         }
         return redirect('/')->with('error', 'Parola hatalı');
